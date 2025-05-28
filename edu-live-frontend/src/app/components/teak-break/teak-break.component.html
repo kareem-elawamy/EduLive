@@ -1,0 +1,12 @@
+<!-- Navbar -->
+<app-navbar (toggleSidebar)="sidebarOpen = !sidebarOpen"></app-navbar>
+
+<div class="flex"> <!-- assuming navbar height = 64px -->
+  <!-- Sidebar -->
+  <app-sidebar class="w-64 bg-blue-200" [isOpen]="sidebarOpen"></app-sidebar>
+
+  <!-- Main Content -->
+  <main class="flex-1 ">
+    <router-outlet></router-outlet>
+  </main>
+</div>

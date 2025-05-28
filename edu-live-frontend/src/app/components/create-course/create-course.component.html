@@ -1,0 +1,204 @@
+<app-navbar></app-navbar>
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 p-6" *ngIf="auth.isLoggedIn()">
+  <div class="max-w-6xl mx-auto space-y-12">
+    <div *ngIf="auth.isAdmin()" class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+      <h2 class="text-2xl font-semibold text-center mb-4">Create New Course</h2>
+      <form [formGroup]="form" (ngSubmit)="createCourse()" enctype="multipart/form-data" class="space-y-5">
+        <div>
+          <label class="block text-sm font-medium mb-1">Course Title</label>
+          <input formControlName="title" type="text"
+            class="w-full px-3 py-2 border rounded-md shadow-sm bg-gray-50 dark:bg-gray-700 text-sm" />
+          <span *ngIf="form.controls['title'].errors && form.controls['title'].touched"
+            class="text-red-500 text-xs mt-1 block">Title is required</span>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Description</label>
+          <textarea formControlName="description" rows="3"
+            class="w-full px-3 py-2 border rounded-md shadow-sm bg-gray-50 dark:bg-gray-700 text-sm resize-none"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Course Image</label>
+          <input type="file" accept="image/*" (change)="onFileSelected($event)"
+            class="block w-full text-sm file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-white file:bg-sky-500 hover:file:bg-sky-600" />
+        </div>
+        <div class="text-center">
+          <button type="submit"
+            class="bg-sky-500 text-white px-6 py-2 text-sm rounded-md hover:bg-sky-600 transition">Create
+            Course</button>
+        </div>
+      </form>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md" *ngIf="auth.isTeacher() && !auth.isAdmin()">
+      <h2 class="text-2xl font-semibold text-center mb-4">Your Courses</h2>
+      <ng-container *ngIf="courses.length > 0; else noCourses">
+        <div class="overflow-x-auto">
+          <table class="w-full table-auto text-sm border rounded-md overflow-hidden">
+            <thead>
+              <tr class="bg-sky-100 dark:bg-sky-900 text-gray-700 dark:text-gray-100">
+                <th class="p-2 text-left">Title</th>
+                <th class="p-2 text-left">Description</th>
+                <th class="p-2 text-center">Image</th>
+                <th class="p-2 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let course of courses" class="hover:bg-gray-50 dark:hover:bg-gray-700 border-b">
+                <td class="p-2">{{ course.title }}</td>
+                <td class="p-2">{{ course.description }}</td>
+                <td class="p-2 text-center">
+                  <img [src]="getUserImage(course.img)" alt="Course Image"
+                    class="w-12 h-12 object-cover rounded-md mx-auto border" />
+                </td>
+                <td class="p-2 text-center">
+                  <button (click)="AddQuiz(course.id)"
+                    class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition">Add
+                    Quiz</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+      <ng-template #noCourses>
+        <p class="text-center text-gray-400 py-4">No courses found.</p>
+      </ng-template>
+    </div>
+    <div *ngIf="auth.isAdmin()" class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
+      <h2 class="text-2xl font-semibold text-center mb-4">All Courses</h2>
+      <table class="w-full table-auto text-sm border rounded-md overflow-hidden">
+        <thead>
+          <tr class="bg-sky-100 dark:bg-sky-900 text-gray-700 dark:text-gray-100">
+            <th class="p-2 text-left">Title</th>
+            <th class="p-2 text-left">Description</th>
+            <th class="p-2 text-center">Image</th>
+            <th class="p-2 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let course of courses" class="hover:bg-gray-50 dark:hover:bg-gray-700 border-b">
+            <td class="p-2">{{ course.title }}</td>
+            <td class="p-2">{{ course.description }}</td>
+            <td class="p-2 text-center">
+              <img [src]="getUserImage(course.img)" alt="Course Image"
+                class="w-12 h-12 object-cover rounded-md mx-auto border" />
+            </td>
+            <td class="p-2 text-center space-x-2">
+              <button (click)="deleteCourse(course.id)"
+                class="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600">Delete</button>
+              <button (click)="assignCourseToTeacher(course.id)"
+                class="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600">Assign</button>
+              <button (click)="AddQuiz(course.id)"
+                class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">Add Quiz</button>
+              <button (click)="addTask(course.id)"
+                class="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600">Add Task</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="!auth.isAdmin() && !auth.isTeacher()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+      <div *ngFor="let course of courses"
+        class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition duration-300">
+        <img [src]="getUserImage(course.img)" class="w-full h-40 object-cover" />
+        <div class="p-4">
+          <h3 class="text-lg font-bold mb-1">{{ course.title }}</h3>
+          <p class="text-sm mb-2">{{ course.description }}</p>
+          <p class="text-sm">Teacher: <a [routerLink]="['/teacher', course.teacherId]"
+              class="text-blue-500 hover:underline">{{ course.teacher }}</a></p>
+          <p class="text-xs text-gray-400">{{ course.createdAt | date }}</p>
+          <p class="text-xs mt-1">Quizzes: <span class="font-medium">{{ course.numberQuizzes }}</span></p>
+          <a [routerLink]="['/course', course.id]"
+            class="block mt-4 bg-blue-500 text-white text-center py-2 rounded-md hover:bg-blue-600 transition">View
+            Course</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50" *ngIf="showQuizForm">
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-md p-6 relative">
+    <button class="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl" (click)="closeQuizForm()">
+      &times;
+    </button>
+    <h3 class="text-xl font-semibold text-center mb-4">Create New Quiz</h3>
+    <form [formGroup]="quizForm" (ngSubmit)="createQuiz()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium mb-1">Quiz Title</label>
+        <input formControlName="title" type="text"
+          class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700 text-sm" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Description</label>
+        <textarea formControlName="description" rows="2"
+          class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700 text-sm resize-none"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Total Marks</label>
+          <input formControlName="totalMarks" type="number" min="1"
+            class="w-full px-3 py-2 border rounded-md text-sm bg-gray-50 dark:bg-gray-700" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Passing Marks</label>
+          <input formControlName="passingMarks" type="number" min="1"
+            class="w-full px-3 py-2 border rounded-md text-sm bg-gray-50 dark:bg-gray-700" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Duration (minutes)</label>
+        <input formControlName="duration" type="number" min="1"
+          class="w-full px-3 py-2 border rounded-md text-sm bg-gray-50 dark:bg-gray-700" />
+      </div>
+      <div class="text-center">
+        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition">Create
+          Quiz</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50" *ngIf="showtaskForm">
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-md p-6 relative">
+    <button class="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl" (click)="closeQuizForm()">
+      &times;
+    </button>
+    <h3 class="text-xl font-semibold text-center mb-4">Create New Task</h3>
+    <form [formGroup]="taskForm" (ngSubmit)="craeteTask()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium mb-1">Task Title</label>
+        <input formControlName="name" type="text"
+          class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700 text-sm" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Description</label>
+        <textarea formControlName="description" rows="2"
+          class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700 text-sm resize-none"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Level</label>
+          <select formControlName="laval"
+            class="w-full px-3 py-2 border rounded-md text-sm bg-gray-50 dark:bg-gray-700">
+            <option value="" disabled selected>Select level</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">deadline</label>
+          <input formControlName="deadline" type="date"
+            class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700 text-sm" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Degree</label>
+        <input formControlName="degree" type="number"
+          class="w-full px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700 text-sm" />
+      </div>
+      <div class="text-center">
+        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition">Create
+          Task</button>
+      </div>
+    </form>
+  </div>
+</div>

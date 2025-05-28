@@ -1,0 +1,118 @@
+<app-navbar></app-navbar>
+
+<div class="container mx-auto p-4 text-gray-900 dark:text-gray-100">
+
+  <!-- واجهة الأدمن -->
+  <div *ngIf="auth.isAdmin()" class="mb-8 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+    <h2 class="text-2xl font-bold mb-4 text-center text-blue-600 dark:text-blue-400">Submitted Tasks</h2>
+    <div class="overflow-auto rounded-lg">
+      <table class="w-full border-collapse">
+        <thead class="bg-gray-100 dark:bg-gray-700 text-left">
+          <tr>
+            <th class="p-3">Student</th>
+            <th class="p-3">Course</th>
+            <th class="p-3">Task</th>
+            <th class="p-3">Degree</th>
+            <th class="p-3">File</th>
+            <th class="p-3">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let task of taskSubmit" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-all border-b">
+            <td class="p-3">{{ task.student }}</td>
+            <td class="p-3">{{ task.course }}</td>
+            <td class="p-3">{{ task.task }}</td>
+            <td class="p-3">{{ task.degree }}</td>
+            <td class="p-3">
+              <a [href]="getUserImage(task.fill)" target="_blank" class="text-blue-500 hover:underline">View</a>
+            </td>
+            <td class="p-3" *ngIf="!degreeStatusMap[task.id]">
+              <button (click)="addDegree(task.id)" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">
+                Add Degree
+              </button>
+            </td>
+            <td *ngIf="degreeStatusMap[task.id]" class="p-3">Task Done</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div *ngIf="loading" class="text-center my-4">
+    <span class="text-blue-500 animate-pulse">Loading tasks...</span>
+  </div>
+  <!-- بحث وفلاتر -->
+  <div class="max-w-3xl mx-auto mb-8 bg-white dark:bg-gray-800 shadow-md rounded-xl p-6">
+    <h2 class="text-2xl font-semibold text-center mb-4">Search and Filter Tasks</h2>
+
+    <div class="flex flex-col sm:flex-row gap-3">
+      <input type="text" [(ngModel)]="searchQuery" placeholder="Enter course name..."
+        class="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+
+      <button (click)="searchCourse()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+        Search
+      </button>
+
+      <button (click)="filterByDeadline()"
+        class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition">
+        Near Deadline
+      </button>
+    </div>
+  </div>
+
+  <!-- المهام -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div *ngFor="let task of tasks | taskFilter: searchQuery"
+      class="relative group bg-white dark:bg-gray-800 rounded-2xl shadow-md transition duration-300 p-4 flex flex-col overflow-hidden transform hover:scale-105">
+
+      <button (click)="deleteTaskWithAnimation(task.id)"
+        class="absolute top-3 right-3 bg-red-600 hover:bg-red-700 p-2 text-white rounded-full text-sm z-10 shadow">
+        &times;
+      </button>
+
+      <h2 class="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2 truncate">{{ task.name }}</h2>
+
+      <p class="text-gray-700 dark:text-gray-300 mb-1"><strong>Description:</strong> {{ task.description }}</p>
+      <p class="text-gray-700 dark:text-gray-300 mb-1"><strong>Degree:</strong> {{ task.degree }}</p>
+      <p class="text-gray-500 dark:text-gray-400 text-sm mb-1"><strong>Deadline:</strong> {{ task.deadline | date:
+        'short' }}</p>
+      <p class="text-gray-500 dark:text-gray-400 text-sm mb-1"><strong>Course:</strong> {{ task.courseName }}</p>
+      <p class="text-gray-500 dark:text-gray-400 text-sm mb-1"><strong>Level:</strong> {{ task.level }}</p>
+
+      <!-- أزرار الإرسال والعرض -->
+      <button *ngIf="!taskStatusMap[task.id]" (click)="submit(task.id)"
+        class="p-4 mt-2 bg-green-400 text-white text-center hover:bg-green-600 rounded-2xl">
+        Submit Task
+      </button>
+
+      <a *ngIf="taskStatusMap[task.id]" [href]="getUserImage(task.fill)" target="_blank"
+        class="p-4 mt-2 bg-green-400 text-center text-white hover:bg-green-600 rounded-2xl">
+        Show Your Task
+      </a>
+    </div>
+  </div>
+
+  <!-- نافذة إرسال المهمة -->
+  <div class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50" *ngIf="showForm">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-md p-6 relative">
+      <button class="absolute top-2 right-2 text-2xl text-gray-500 hover:text-red-500" (click)="closeForm()">
+        &times;
+      </button>
+      <h3 class="text-xl font-semibold text-center mb-4">Submit New Task</h3>
+
+      <form (ngSubmit)="sendTask()" enctype="multipart/form-data">
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-2">Upload File</label>
+          <input type="file" (change)="onFileSelected($event)"
+            class="w-full p-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white" />
+        </div>
+
+        <div class="text-center">
+          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>

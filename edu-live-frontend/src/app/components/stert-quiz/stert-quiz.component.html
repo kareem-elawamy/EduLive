@@ -1,0 +1,38 @@
+<app-navbar></app-navbar>
+<div class="p-4 max-w-4xl mx-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+  <h1 class="text-3xl font-bold mb-4 text-center">{{ quiz?.title }}</h1>
+  <p class="text-center text-gray-600 dark:text-gray-400 mb-6">{{ quiz?.description }}</p>
+
+  <div class="text-center text-lg font-semibold mb-4">
+    Time Left: <span class="text-red-600 dark:text-red-400">{{ minutes }}:{{ seconds | number: '2.0' }}</span>
+  </div>
+
+  <form *ngIf="!timeUp">
+    <div class="space-y-6">
+      <div *ngFor="let question of quiz?.questions; let i = index"
+        [ngClass]="getDifficultyClass(question.degreeOfDifficulty) + ' p-4 rounded-xl shadow dark:shadow-gray-700'"
+        class="bg-gray-100 dark:bg-gray-800">
+        <p class="font-semibold">{{'Q' + (i + 1)}}: {{ question.text }}</p>
+        <div class="mt-2 space-y-1">
+          <label class="block"><input type="radio" name="q{{ question.id }}" value="A"
+              (change)="saveAnswer(question.id, 'A')"> A. {{ question.optionA }}</label>
+          <label class="block"><input type="radio" name="q{{ question.id }}" value="B"
+              (change)="saveAnswer(question.id, 'B')"> B. {{ question.optionB }}</label>
+          <label class="block"><input type="radio" name="q{{ question.id }}" value="C"
+              (change)="saveAnswer(question.id, 'C')"> C. {{ question.optionC }}</label>
+          <label class="block"><input type="radio" name="q{{ question.id }}" value="D"
+              (change)="saveAnswer(question.id, 'D')"> D. {{ question.optionD }}</label>
+        </div>
+      </div>
+    </div>
+
+    <button (click)="submitQuiz()" type="button"
+      class="mt-6 w-full bg-blue-600 dark:bg-blue-500 text-white py-2 rounded-xl hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-300">
+      Submit Quiz
+    </button>
+  </form>
+
+  <div *ngIf="timeUp" class="text-center text-red-600 dark:text-red-400 font-bold mt-10 text-xl">
+    Time's up! Your answers have been submitted.
+  </div>
+</div>

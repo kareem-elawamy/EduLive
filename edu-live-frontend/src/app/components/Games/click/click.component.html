@@ -1,0 +1,8 @@
+<div class="scoreboard " >score: {{score}}</div>
+<canvas #gameCanvas (click)="handleClick($event)"></canvas>
+<div>
+  <button (click)="startGame()">start Game</button>
+  <button (click)="stopGame()">stop Game</button>
+  <button (click)="showScore()">show Score
+  </button>
+</div>

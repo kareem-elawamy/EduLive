@@ -1,0 +1,25 @@
+<app-navbar></app-navbar>
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 p-6">
+  <div class="max-w-6xl mx-auto space-y-12">
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+      <div *ngFor="let course of courses"
+        class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition duration-300">
+        <img [src]="getUserImage(course.img)" class="w-full h-40 object-cover" />
+        <div class="p-4">
+          <h3 class="text-lg font-bold mb-1">{{ course.title }}</h3>
+          <p class="text-sm mb-2">{{ course.description }}</p>
+          <p class="text-sm">Teacher: <a [routerLink]="['/teacher', course.teacherId]"
+              class="text-blue-500 hover:underline">{{ course.teacher }}</a></p>
+          <p class="text-xs text-gray-400">{{ course.createdAt | date }}</p>
+          <p class="text-xs mt-1">Quizzes: <span class="font-medium">{{ course.numberQuizzes }}</span></p>
+          <p class="text-xs mt-1">Tasks: <span class="font-medium">{{ course.tasks }}</span></p>
+
+          <a [routerLink]="['/course', course.id]"
+            class="block mt-4 bg-blue-500 text-white text-center py-2 rounded-md hover:bg-blue-600 transition">View
+            Course</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

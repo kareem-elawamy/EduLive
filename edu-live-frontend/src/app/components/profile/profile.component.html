@@ -1,0 +1,144 @@
+<app-navbar></app-navbar>
+
+<div class="container mx-auto px-4 py-12 ">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+    <form [formGroup]="profileForm" enctype="multipart/form-data" (submit)="onSubmit()"
+      class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-2xl p-8 space-y-6 text-gray-800 dark:text-gray-200">
+      <div class="flex flex-col items-center gap-3 relative group">
+        <img [src]="profileImg(userProfile.profileImageUrl)"
+          class="w-24 h-24 rounded-full object-cover shadow border transition group-hover:scale-105 group-hover:rotate-1 duration-300" />
+        <div
+          class="absolute bottom-0 right-10 bg-blue-600 text-white p-1.5 rounded-full shadow group-hover:scale-110 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.586-6.586A4 4 0 0015.172 7z" />
+          </svg>
+        </div>
+
+        <label class="text-sm text-blue-600 dark:text-blue-400 underline cursor-pointer">
+          Change Photo
+          <input type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden" />
+        </label>
+      </div>
+      <div>
+        <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">User name</label>
+        <input type="text" name="userName" formControlName="userName"
+          class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-gray-800 dark:text-gray-100"
+          [placeholder]="auth.getUserName()" required />
+      </div>
+
+      <button type="submit" [disabled]="!profileForm.valid"
+        class="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2.5 rounded-lg transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        Update Profile
+      </button>
+      <div *ngIf="message" class="mt-4 text-green-600">{{ message }}</div>
+      <div class="pt-6 border-t border-gray-200 dark:border-gray-700">
+        <h3 class="text-center text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">🧩 Roles</h3>
+        <div class="flex justify-center flex-wrap gap-2">
+          <ng-container *ngFor="let role of userProfile.roles">
+            <span [ngClass]="{
+              'bg-red-100 text-red-700 dark:bg-red-700 dark:text-red-100': role == 'Admin',
+              'bg-blue-100 text-blue-700 dark:bg-blue-700 dark:text-blue-100': role == 'Teacher',
+              'bg-green-100 text-green-700 dark:bg-green-700 dark:text-green-100': role != 'Admin' && role != 'Teacher'
+            }" class="text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+              {{ role }}
+            </span>
+          </ng-container>
+        </div>
+      </div>
+    </form>
+
+    <!-- ✅ Quizzes Panel -->
+    <div class="space-y-10">
+
+      <!-- Student Quizzes -->
+      <div class="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700"
+        *ngIf="!auth.isAdmin()">
+        <h2 class="text-xl font-bold mb-6 text-center text-gray-700 dark:text-gray-300">📚 Your Quizzes</h2>
+
+        <ul *ngIf="studentQuizzes.length > 0; else noQuizzes" class="space-y-4">
+          <li *ngFor="let quiz of studentQuizzes"
+            class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm space-y-1">
+            <h3 class="font-bold text-blue-600 dark:text-blue-400 text-sm">{{ quiz.quizName }}</h3>
+            <p class="text-sm text-gray-700 dark:text-gray-300">Score: {{ quiz.totalMarksObtained }} / {{
+              quiz.totalMarks }}</p>
+            <p class="text-sm text-gray-700 dark:text-gray-300">
+              Status:
+              <span [ngClass]="quiz.isPassed ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                {{ quiz.isPassed ? '✅ Passed' : '❌ Failed' }}
+              </span>
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">📅 Submitted: {{ quiz.submittedAt | date:'short' }}</p>
+          </li>
+        </ul>
+
+        <div *ngIf="!student.isGreenOrRed(); else redHint">
+          <p class="text-center text-sm mt-4 text-gray-600 dark:text-gray-400">Keep solving!</p>
+          <a
+            class="block mt-4 text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg shadow transition cursor-pointer">
+            Start Solving
+          </a>
+        </div>
+
+        <ng-template #redHint>
+          <p class="text-center text-sm mt-4 text-gray-600 dark:text-gray-400">You need to solve more.</p>
+          <a [routerLink]="['/quiz']"
+            class="block mt-4 text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg shadow transition cursor-pointer">
+            Start Solving
+          </a>
+        </ng-template>
+
+        <ng-template #noQuizzes>
+          <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">No quizzes available yet.</p>
+        </ng-template>
+      </div>
+
+      <div *ngIf="tasks.length > 0; else noTask"
+        class="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 mt-6">
+        <h2 class="text-xl font-bold mb-6 text-center text-gray-700 dark:text-gray-300">🎓 Your Tasks Grades</h2>
+
+        <ul class="space-y-4">
+          <li *ngFor="let deg of tasks" class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm space-y-1">
+            <h3 class="font-bold text-blue-600 dark:text-blue-400 text-sm">{{ deg.taskName }}</h3>
+            <p class="text-sm text-gray-700 dark:text-gray-300">📄 File: <a [href]="deg.fill" target="_blank"
+                class="text-blue-500 underline">View</a></p>
+            <p class="text-sm text-gray-700 dark:text-gray-300">🎯 Degree: {{ deg.degree }}</p>
+          </li>
+        </ul>
+      </div>
+      <ng-template #noTask>
+        <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">No Tasks available yet.</p>
+      </ng-template>
+    </div>
+    <!--
+      <div class="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700"
+        *ngIf="auth.isAdmin() || auth.isTeacher()">
+        <h2 class="text-xl font-bold mb-6 text-center text-gray-700 dark:text-gray-300">📝 Courses Quizzes</h2>
+
+        <ul *ngIf="coursesTeacher.courses.length > 0; else noCourses" class="space-y-4">
+          <li *ngFor="let course of coursesTeacher.courses"
+            class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm space-y-2">
+            <div class="flex items-center gap-4">
+              <img [src]="profileImg(course.img)" alt=""
+                class="w-16 h-16 object-cover rounded-lg border shadow border-gray-300 dark:border-gray-600" />
+              <div>
+                <h3 class="font-bold text-blue-600 dark:text-blue-400 text-sm">{{ course.title }}</h3>
+                <p class="text-sm text-gray-700 dark:text-gray-300">Quizzes: {{ course.numberQuizzes }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">📅 Created: {{ course.createdAt | date:'short' }}
+                </p>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <ng-template #noCourses>
+          <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">No course quizzes available.</p>
+        </ng-template>
+      </div>
+
+    </div>
+  </div>
+</div> -->

@@ -1,0 +1,58 @@
+<!-- hangman.component.html -->
+<div class="container mx-auto max-w-4xl dark:bg-gray-900 mt-1 p-6 bg-white rounded-xl shadow-md">
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold text-blue-600">Hangman</h1>
+    <div class="space-x-4">
+      <span class="text-sm">Category: <span class="font-semibold text-blue-500">{{ wordCategory }}</span></span>
+      <span class="text-sm">Mistakes: <span class="font-bold">{{ wrongAttempts }}</span></span>
+      <span class="text-sm">Time: <span class="font-bold">{{ timerDisplay }}</span></span>
+    </div>
+  </div>
+
+  <!-- Letters UI -->
+  <div class="flex flex-wrap gap-2 mb-4">
+    <span *ngFor="let letter of letters" (click)="onLetterClick(letter)"
+      [class.opacity-50]="clickedLetters.includes(letter)"
+      class="letter-box w-10 h-10 flex items-center justify-center bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600">
+      {{ letter | uppercase }}
+    </span>
+  </div>
+
+  <!-- Word display -->
+  <div class="flex flex-wrap gap-2 justify-center mb-4">
+    <span *ngFor="let letter of wordLetters" class="w-10 h-10 border-b-2 border-blue-500 text-xl text-center leading-10"
+      [class.bg-transparent]="letter === ' '" [class.border-none]="letter === ' '">
+      {{ isLetterRevealed(letter) ? letter : '' }}
+    </span>
+  </div>
+
+  <!-- Hangman Drawing -->
+  <div class="relative h-64 bg-gray-50 border border-dashed border-gray-300 rounded-lg mb-4">
+    <div class="stand absolute bottom-0 left-12 w-1 h-full bg-gray-700"></div>
+    <div class="hang absolute top-0 left-12 w-32 h-1 bg-gray-700"></div>
+    <div class="rope absolute top-0 left-44 w-0.5 h-8 bg-gray-700"></div>
+    <div id="head" class="absolute top-8 left-40 w-8 h-8 border-4 border-gray-700 rounded-full"
+      *ngIf="wrongAttempts > 0"></div>
+    <div id="body" class="absolute top-16 left-44 w-1 h-16 bg-gray-700" *ngIf="wrongAttempts > 1"></div>
+    <div id="hands" class="absolute top-24 left-36 w-20 h-1 bg-gray-700" *ngIf="wrongAttempts > 2"></div>
+    <div id="legs" class="absolute top-32 left-36 w-20 h-1 bg-gray-700" *ngIf="wrongAttempts > 3"></div>
+  </div>
+
+  <!-- Restart -->
+  <div class="text-center">
+    <button (click)="resetGame()"
+      class="px-6 py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded shadow-md">
+      Restart
+    </button>
+  </div>
+
+  <!-- Game Over -->
+  <div *ngIf="isGameOver()" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-red-500 text-white p-6 rounded-lg text-lg font-bold shadow-lg">
+      Game Over! The word was: <span class="underline">{{ wordToGuess }} </span> <button (click)="resetGame()"
+        class="px-6 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded shadow-md">
+        Restart
+      </button>
+    </div>
+  </div>
+</div>

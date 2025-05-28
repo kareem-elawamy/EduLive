@@ -1,0 +1,77 @@
+<app-navbar></app-navbar>
+<div class="max-w-6xl mx-auto px-4 py-8 space-y-10">
+  <div *ngIf="auth.isAdmin()||auth.isTeacher()" class="bg-white shadow-lg rounded-xl p-6 border border-gray-200">
+    <h2 class="text-2xl font-bold text-blue-700 mb-4">Create a new meeting</h2>
+
+    <form (ngSubmit)="createMeeting()" class="grid md:grid-cols-2 gap-4">
+      <input type="text" [(ngModel)]="meeting.meetingName" name="meetingName" placeholder="Meeting name"
+        class="w-full p-3 border rounded" required>
+
+      <input type="datetime-local" [(ngModel)]="meeting.startTime" name="startTime" class="w-full p-3 border rounded"
+        required>
+      <input type="datetime-local" [(ngModel)]="meeting.endTime" name="endTime" class="w-full p-3 border rounded"
+        required>
+      <button type="submit"
+        class="md:col-span-2 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded font-medium transition">
+        Create meeting
+      </button>
+    </form>
+    <div *ngIf="successMessage" class="text-green-600 mt-4 font-semibold">
+      {{ successMessage }}
+    </div>
+  </div>
+
+  <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+    <input [(ngModel)]="searchTerm" placeholder="Search by meeting name..."
+      class="p-3 w-full md:w-1/2 border rounded shadow-sm" />
+
+    <select [(ngModel)]="sortOrder" class="p-3 border rounded shadow-sm text-gray-700">
+      <option value="asc">Sort by time ↑</option>
+      <option value="desc">Sort by time ↓</option>
+    </select>
+  </div>
+  <div>
+    <h1 class="text-2xl font-bold mb-4 text-blue-700">كل الاجتماعات</h1>
+
+    <div *ngIf="filteredMeetings.length === 0" class="text-center text-gray-500">
+      There are no meetings currently.
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let meeting of filteredMeetings" class="bg-white shadow rounded-xl p-5 border">
+        <h2 class="text-lg font-semibold text-gray-800 mb-2">{{ meeting.meetingName }}</h2>
+
+        <div class="text-sm text-gray-600 space-y-1 mb-3">
+          <p><span class="font-semibold">from:</span> {{ meeting.startTime | date:'short' }}</p>
+          <p><span class="font-semibold">To:</span> {{ meeting.endTime | date:'short' }}</p>
+          <p><span class="font-semibold">Teacher:</span> {{ meeting.email || 'unknown' }}</p>
+          <p class="text-sm text-gray-600">
+            <span class="font-bold">the condition:</span>
+            {{ getMeetingStatus(meeting.startTime, meeting.endTime) }}
+          </p>
+
+          <p *ngIf="!canJoinMeeting(meeting.startTime, meeting.endTime)" class="text-red-600 text-sm mt-1">
+            Starts during: {{ getTimeRemaining(meeting.startTime) }}
+          </p>
+
+        </div>
+
+        <a *ngIf="canJoinMeeting(meeting.startTime, meeting.endTime)" [routerLink]="['/meeting', meeting.roomId]"
+          class="block w-full text-center bg-blue-600 text-white font-medium py-2 rounded hover:bg-blue-700 transition">
+          Entering the meeting
+        </a>
+
+        <button *ngIf="!canJoinMeeting(meeting.startTime, meeting.endTime)" disabled
+          class="block w-full text-center bg-gray-400 text-white font-medium py-2 rounded cursor-not-allowed">
+          Meeting Entry (Not Available Now)
+        </button>
+
+        <div class="mt-4 flex justify-center">
+          <qrcode [qrdata]="'https://localhost:4200/meeting/' + meeting.roomId" [width]="128"
+            [errorCorrectionLevel]="'M'">
+          </qrcode>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

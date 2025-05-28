@@ -1,0 +1,147 @@
+<app-navbar></app-navbar>
+<div *ngIf="quiz"
+  class="p-6 max-w-5xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md transition-colors duration-300">
+  <h1 class="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-4">{{ quiz.title }}</h1>
+  <p class="mb-2 text-gray-700 dark:text-gray-300"><strong>Description:</strong> {{ quiz.description }}</p>
+  <p class="mb-2 text-gray-700 dark:text-gray-300"><strong>Course:</strong> {{ quiz.courseTitle }}</p>
+  <p class="mb-2 text-gray-700 dark:text-gray-300"><strong>Marks:</strong> {{ quiz.passingMarks }}/{{ quiz.totalMarks }}
+  </p>
+  <p class="mb-2 text-gray-700 dark:text-gray-300"><strong>Duration:</strong> {{ quiz.duration }} mins</p>
+  <p class="mb-4 text-gray-500 dark:text-gray-400 text-sm"><strong>Created:</strong> {{ quiz.createdAt | date: 'short'
+    }}</p>
+  <button (click)="deleteQuiz(quiz.id)"
+    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition duration-300">
+    delete Quiz
+  </button>
+
+  <h2 class="text-xl font-semibold mt-6 mb-4 text-gray-900 dark:text-gray-100">Questions</h2>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-sm text-left border-collapse border border-gray-300 dark:border-gray-700">
+      <thead class="bg-gray-200 dark:bg-gray-800">
+        <tr>
+          <th class="py-2 px-4 border border-gray-300 dark:border-gray-700">Text</th>
+          <th class="py-2 px-4 border border-gray-300 dark:border-gray-700">A</th>
+          <th class="py-2 px-4 border border-gray-300 dark:border-gray-700">B</th>
+          <th class="py-2 px-4 border border-gray-300 dark:border-gray-700">C</th>
+          <th class="py-2 px-4 border border-gray-300 dark:border-gray-700">D</th>
+          <th class="py-2 px-4 border border-gray-300 dark:border-gray-700">Correct</th>
+          <th class="py-2 px-4 border border-gray-300 dark:border-gray-700">Marks</th>
+          <th class="py-2 px-4 border border-gray-300 dark:border-gray-700">Difficulty</th>
+          <th class="py-2 px-4 border border-gray-300 dark:border-gray-700">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let q of quiz.questions"
+          class="border-b border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200">
+          <td class="py-2 px-4 text-gray-900 dark:text-gray-200">{{ q.text }}</td>
+          <td class="py-2 px-4 text-gray-900 dark:text-gray-200">{{ q.optionA }}</td>
+          <td class="py-2 px-4 text-gray-900 dark:text-gray-200">{{ q.optionB }}</td>
+          <td class="py-2 px-4 text-gray-900 dark:text-gray-200">{{ q.optionC }}</td>
+          <td class="py-2 px-4 text-gray-900 dark:text-gray-200">{{ q.optionD }}</td>
+          <td class="py-2 px-4 font-bold text-green-600 dark:text-green-400">{{ q.correctAnswer }}</td>
+          <td class="py-2 px-4 text-gray-900 dark:text-gray-200">{{ q.marks }}</td>
+          <td class="py-2 px-4 text-gray-900 dark:text-gray-200">{{ q.degreeOfDifficulty }}</td>
+          <td class="py-2 px-4">
+            <button (click)="deleteQuestion(q.id)"
+              class="bg-red-400 hover:bg-red-500 text-white px-3 py-1 text-sm rounded-md transition">
+              Delete
+            </button>
+            <button (click)="editQuestion(q.id)"
+              class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 text-sm rounded-md transition ml-2">
+              Edit
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-6">
+    <button (click)="AddQuestions(quiz.id)"
+      class="bg-blue-400 hover:bg-blue-500 text-white px-3 py-1 text-sm rounded-md transition ml-2">
+      Add Quiz
+    </button>
+  </div>
+</div>
+
+<!-- Quiz Form Modal -->
+<div class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50" *ngIf="showQuizForm">
+  <div
+    class="bg-white dark:bg-gray-900 rounded-xl shadow-lg w-full max-w-md p-6 relative transition-colors duration-300">
+    <button
+      class="absolute top-2 right-2 text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 text-xl"
+      (click)="closeQuizForm()">
+      &times;
+    </button>
+    <h3 class="text-xl font-semibold text-center text-gray-700 dark:text-gray-200 mb-4">Create New Quiz</h3>
+
+    <form [formGroup]="questionsForm" (ngSubmit)="createQuestions()" class="space-y-4">
+      <!-- Question Text -->
+      <div>
+        <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Question</label>
+        <input formControlName="Text" type="text"
+          class="w-full px-3 py-2 border rounded-md shadow-sm focus:ring-1 focus:ring-blue-400 outline-none text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-700" />
+      </div>
+
+      <!-- Options -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Option A</label>
+          <input formControlName="OptionA" type="text"
+            class="w-full px-3 py-2 border rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-700" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Option B</label>
+          <input formControlName="OptionB" type="text"
+            class="w-full px-3 py-2 border rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-700" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Option C</label>
+          <input formControlName="OptionC" type="text"
+            class="w-full px-3 py-2 border rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-700" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Option D</label>
+          <input formControlName="OptionD" type="text"
+            class="w-full px-3 py-2 border rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-700" />
+        </div>
+      </div>
+
+      <!-- Correct Answer + Marks -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Correct Answer</label>
+          <input formControlName="CorrectAnswer" type="text"
+            class="w-full px-3 py-2 border rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-700" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Marks</label>
+          <input formControlName="Marks" type="number" min="1"
+            class="w-full px-3 py-2 border rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 border-gray-300 dark:border-gray-700" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Degree of Difficulty</label>
+        <div class="flex items-center gap-4">
+          <span class="text-sm font-medium text-gray-600 dark:text-gray-300">{{s}}</span>
+          <input type="range" min="1" max="5" formControlName="DegreeOfDifficulty" (input)="updateSliderColor()"
+            [ngStyle]="{ 'accent-color': sliderColor }"
+            class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-300 dark:bg-gray-700" />
+          <span [style.color]="sliderColor" class="text-lg font-bold text-gray-900 dark:text-gray-200">
+            {{ questionsForm.get('DegreeOfDifficulty')?.value }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="text-center pt-4">
+        <button type="submit" [disabled]="questionsForm.invalid"
+          class="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-md transition">
+          Submit Question
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

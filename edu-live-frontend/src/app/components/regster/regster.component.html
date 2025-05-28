@@ -1,0 +1,106 @@
+<app-navbar></app-navbar>
+<div
+  class="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-blue-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+  <div
+    class="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 transition-all duration-500 border border-gray-200 dark:border-gray-700">
+    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-1 text-center">Register</h2>
+    <p class="text-sm text-gray-600 dark:text-gray-300 mb-6 text-center">Create your account</p>
+    <form [formGroup]="form" (ngSubmit)="registerUser()" enctype="multipart/form-data">
+
+      <!-- Name -->
+      <div class="mb-4">
+        <label for="name" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Name</label>
+        <input formControlName="username" type="text" id="full-name"
+          class="block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          placeholder="Full Name*" />
+        <span class="text-red-500 text-sm"
+          *ngIf="form.controls['username'].errors && form.controls['username'].touched">
+          Name is required
+        </span>
+      </div>
+
+      <!-- Email -->
+      <div class="mb-4">
+        <label for="email" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Email</label>
+        <input formControlName="email" type="email" id="email"
+          class="block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          placeholder="Email*" />
+        <span class="text-red-500 text-sm" *ngIf="form.controls['email'].errors && form.controls['email'].touched">
+          Valid email is required
+        </span>
+      </div>
+
+      <!-- Phone -->
+      <div class="mb-4">
+        <label for="phonenumber" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Phone
+          Number</label>
+        <input formControlName="phonenumber" type="text" id="phonenumber"
+          class="block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          placeholder="Phone Number*" />
+        <span class="text-red-500 text-sm"
+          *ngIf="form.controls['phonenumber'].errors && form.controls['phonenumber'].touched">
+          Phone number is required
+        </span>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-4">
+        <label for="password" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Password</label>
+        <input formControlName="password" type="password" id="password"
+          class="block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          placeholder="Password*" />
+        <span class="text-red-500 text-sm"
+          *ngIf="form.controls['password'].errors && form.controls['password'].touched">
+          Password is required (min 6 characters)
+        </span>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="mb-4">
+        <label for="confirmPassword" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Confirm
+          Password</label>
+        <input formControlName="confirmPassword" type="password" id="confirmPassword"
+          class="block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          placeholder="Confirm Password*" />
+        <span class="text-red-500 text-sm"
+          *ngIf="form.hasError('passwordMatch') && form.get('confirmPassword')?.touched">
+          Passwords do not match
+        </span>
+      </div>
+
+      <!-- Profile Picture -->
+      <div class="mb-4">
+        <label for="profilePicture" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Profile
+          Picture</label>
+        <input type="file" id="profilePicture" (change)="onFileSelected($event)"
+          class="block w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+        <span class="text-red-500 text-sm"
+          *ngIf="form.controls['profilePicture'].errors && form.controls['profilePicture'].touched">
+          Profile Picture is required
+        </span>
+      </div>
+
+      <!-- Show Password -->
+      <div class="mb-4 flex items-center">
+        <input type="checkbox" id="show-password" (click)="showPassword()" class="mr-2" />
+        <label for="show-password" class="text-sm text-gray-700 dark:text-gray-300">Show Password</label>
+      </div>
+
+      <!-- Register Button -->
+      <div class="mb-4">
+        <button type="submit"
+          class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+          Register
+        </button>
+      </div>
+
+      <!-- Link to Login -->
+      <div class="text-center">
+        <a routerLink="/login"
+          class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-600 text-sm transition duration-200 underline underline-offset-2">
+          Already have an account?
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

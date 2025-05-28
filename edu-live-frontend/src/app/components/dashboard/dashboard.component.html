@@ -1,0 +1,118 @@
+<app-navbar></app-navbar>
+
+<div class="bg-gray-100 dark:bg-gray-900 min-h-screen py-10 px-4">
+  <div class="text-center mb-8">
+    <button (click)="toggleClick()"
+      class="bg-blue-500 dark:bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-600 dark:hover:bg-blue-700 transition duration-300">
+      {{ isCliked ? 'Show Students' : 'Show Teachers' }}
+    </button>
+    <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">Dashboard</h1>
+
+    <div class="grid grid-cols-2 gap-4 max-w-md mx-auto" *ngIf="isCliked">
+      <div class="bg-blue-100 dark:bg-blue-800 p-4 rounded-lg shadow hover:underline hover:cursor-pointer">
+        <a routerLink="/course">
+          <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-100">Total Courses</h3>
+          <p class="text-2xl font-bold text-blue-600 dark:text-blue-200 hover:after:content-['+']">{{data.totalCourses}}
+          </p>
+        </a>
+      </div>
+      <div class="bg-green-100 dark:bg-green-800 p-4 rounded-lg shadow">
+        <h3 class="text-lg font-semibold text-green-800 dark:text-green-100">Total Teachers</h3>
+        <p class="text-2xl font-bold text-green-600 dark:text-green-200">{{data.totalTeachers}}</p>
+      </div>
+      <div class="bg-yellow-100 dark:bg-yellow-800 p-4 rounded-lg shadow">
+        <h3 class="text-lg font-semibold text-yellow-800 dark:text-yellow-100">Total Quizzes</h3>
+        <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-200">{{data.totalQuizzes}}</p>
+      </div>
+      <div class="bg-red-100 dark:bg-red-800 p-4 rounded-lg shadow">
+        <h3 class="text-lg font-semibold text-red-800 dark:text-red-100">Total Questions</h3>
+        <p class="text-2xl font-bold text-red-600 dark:text-red-200">{{data.totalQuestions}}</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 max-w-md mx-auto" *ngIf="!isCliked">
+      <div class="bg-blue-100 dark:bg-blue-800 p-4 rounded-lg shadow">
+        <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-100">Total LiveSessions</h3>
+        <p class="text-2xl font-bold text-blue-600 dark:text-blue-200">{{data.totalLiveSessions}}</p>
+      </div>
+      <div class="bg-green-100 dark:bg-green-800 p-4 rounded-lg shadow">
+        <h3 class="text-lg font-semibold text-green-800 dark:text-green-100">Total Students</h3>
+        <p class="text-2xl font-bold text-green-600 dark:text-green-200">{{data.totalStudents}}</p>
+      </div>
+      <div class="bg-yellow-100 dark:bg-yellow-800 p-4 rounded-lg shadow">
+        <h3 class="text-lg font-semibold text-yellow-800 dark:text-yellow-100">Total StudentQuizAnswers</h3>
+        <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-200">{{data.totalStudentQuizAnswers}}</p>
+      </div>
+      <div class="bg-red-100 dark:bg-red-800 p-4 rounded-lg shadow hover:underline hover:cursor-pointer">
+        <a routerLink="/course">
+          <h3 class="text-lg font-semibold text-red-800 dark:text-red-100">Total Courses</h3>
+          <p class="text-2xl font-bold text-red-600 dark:text-red-200 hover:after:content-['+']">{{data.totalCourses}}
+          </p>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden" *ngIf="isCliked">
+    <h2 class="text-2xl font-semibold text-center py-6 text-gray-800 dark:text-white border-b dark:border-gray-700">
+      Teachers Summary</h2>
+    <table class="min-w-full">
+      <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm uppercase">
+        <tr>
+          <th class="p-4 text-left">Name</th>
+          <th class="p-4 text-left">Email</th>
+          <th class="p-4 text-center">Image</th>
+          <th class="p-4 text-center">Total Courses</th>
+          <th class="p-4 text-center">Total Quizzes</th>
+          <th class="p-4 text-center">Total Questions</th>
+
+        </tr>
+      </thead>
+      <tbody class="text-gray-600 dark:text-gray-300 text-sm divide-y divide-gray-200 dark:divide-gray-700">
+        <tr *ngFor="let theacher of teachers" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+          <td class="p-4 font-medium">{{ theacher.name }}</td>
+          <td class="p-4">{{ theacher.email }}</td>
+          <td class="p-4 text-center">
+            <img [src]="profileImg(theacher.profileImageUrl)" alt="Teacher Image"
+              class="w-12 h-12 object-cover rounded-md border inline-block border-gray-300 dark:border-gray-600" />
+          </td>
+          <td class="p-4 text-center">{{ theacher.totalCourses }}</td>
+          <td class="p-4 text-center">{{ theacher.totalQuizzes }}</td>
+          <td class="p-4 text-center">{{ theacher.totalQuestions }}</td>
+
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="max-w-6xl mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden" *ngIf="!isCliked">
+    <h2 class="text-2xl font-semibold text-center py-6 text-gray-800 dark:text-white border-b dark:border-gray-700">
+      Students Summary</h2>
+    <table class="min-w-full">
+      <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm uppercase">
+        <tr>
+          <th class="p-4 text-left">Name</th>
+          <th class="p-4 text-left">Email</th>
+          <th class="p-4 text-center">Image</th>
+          <th class="p-4 text-center">Total Student Quiz Answers</th>
+          <th class="p-4 text-center">Phone Number</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-600 dark:text-gray-300 text-sm divide-y divide-gray-200 dark:divide-gray-700">
+        <tr *ngFor="let student of students" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+          <td class="p-4 font-medium">{{ student.name }}</td>
+          <td class="p-4">{{ student.email }}</td>
+          <td class="p-4 text-center">
+            <img [src]="profileImg(student.profileImageUrl)" alt="Teacher Image"
+              class="w-12 h-12 object-cover rounded-md border inline-block border-gray-300 dark:border-gray-600" />
+          </td>
+          <td class="p-4 text-center">{{ student.totalStudentQuizAnswers }}</td>
+          <td class="p-4 text-center">{{ student.phoneNumber }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

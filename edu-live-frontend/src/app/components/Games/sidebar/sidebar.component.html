@@ -1,0 +1,22 @@
+<!-- Sidebar -->
+<div [ngClass]="{'translate-x-0': isOpen, '-translate-x-full': !isOpen}"
+  class="fixed top-16 left-0 w-64 h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 ease-in-out sm:translate-x-0 sm:static sm:block z-40">
+
+  <!-- المحتوى هنا -->
+  <!-- Sidebar -->
+  <div class="p-4 space-y-4">
+    <a routerLink="/break/hangman" routerLinkActive="bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-white"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="block px-4 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-gray-800 transition">
+      Hangman
+    </a>
+    <a routerLink="/break/typingspeed" routerLinkActive="bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-white"
+      class="block px-4 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-gray-800 transition">
+      Typing Speed Test Game
+    </a>
+    <a routerLink="/break/click" routerLinkActive="bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-white"
+      class="block px-4 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-gray-800 transition">
+      Click
+    </a>  
+  </div>
+</div>

@@ -1,0 +1,63 @@
+<app-navbar></app-navbar>
+<div class="p-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <!-- Search Box -->
+  <div class="max-w-md mx-auto mb-8 bg-white dark:bg-gray-800 shadow-md rounded-xl p-6">
+    <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 text-center">Search by Course</h2>
+    <div class="flex gap-2">
+      <input type="text" [(ngModel)]="searchQuery" placeholder="Enter course name..."
+        class="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+      <button (click)="searchCourse()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+        Search
+      </button>
+    </div>
+  </div>
+
+  <!-- Quizzes Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+    *ngIf="auth.isAdmin() || auth.isTeacher()">
+    <a *ngFor="let quiz of quizzes" [routerLink]="['/add-question', quiz.id]"
+      class="relative group bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl transition duration-300 p-4 flex flex-col overflow-hidden cursor-pointer">
+      <img src="Exam.png" alt="Quiz Image" class="w-full h-40 object-cover rounded-xl mb-4" />
+      <div class="group-hover:opacity-0 transition duration-300">
+        <h2 class="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2 truncate">{{ quiz.title }}</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-1"><strong>Description:</strong> {{ quiz.description }}</p>
+        <p class="text-gray-700 dark:text-gray-300 mb-1"><strong>Duration:</strong> {{ quiz.duration }} mins</p>
+        <p class="text-gray-700 dark:text-gray-300 mb-1"><strong>Marks:</strong> {{ quiz.passingMarks }}/{{
+          quiz.totalMarks }}</p>
+        <p class="text-gray-500 dark:text-gray-400 text-sm mt-2"><strong>Created:</strong> {{ quiz.createdAt | date:
+          'short' }}</p>
+        <p class="text-gray-500 dark:text-gray-400 text-sm"><strong>Course:</strong> {{ quiz.courseTitle }}</p>
+      </div>
+      <div
+        class="absolute inset-0 bg-blue-700 bg-opacity-90 dark:bg-blue-800 text-white flex items-center justify-center text-xl font-semibold opacity-0 group-hover:opacity-100 transition duration-300">
+        Add Question
+      </div>
+    </a>
+  </div>
+
+  <div *ngIf="quizzes.length === 0" class="text-center text-gray-500 dark:text-gray-400">
+    <p class="text-lg">No quizzes available.</p>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+    *ngIf="!auth.isAdmin() || !auth.isTeacher()&&auth.isLoggedIn()">
+    <a *ngFor="let quiz of quizzes" [routerLink]="['/stert-quiz', quiz.id]"
+      class="relative group bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl transition duration-300 p-4 flex flex-col overflow-hidden cursor-pointer">
+      <img src="Exam.png" alt="Quiz Image" class="w-full h-40 object-cover rounded-xl mb-4" />
+      <div class="group-hover:opacity-0 transition duration-300">
+        <h2 class="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2 truncate">{{ quiz.title }}</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-1"><strong>Description:</strong> {{ quiz.description }}</p>
+        <p class="text-gray-700 dark:text-gray-300 mb-1"><strong>Duration:</strong> {{ quiz.duration }} mins</p>
+        <p class="text-gray-700 dark:text-gray-300 mb-1"><strong>Marks:</strong> {{ quiz.passingMarks }}/{{
+          quiz.totalMarks }}</p>
+        <p class="text-gray-500 dark:text-gray-400 text-sm mt-2"><strong>Created:</strong> {{ quiz.createdAt | date:
+          'short' }}</p>
+        <p class="text-gray-500 dark:text-gray-400 text-sm"><strong>Course:</strong> {{ quiz.courseTitle }}</p>
+      </div>
+      <div
+        class="absolute inset-0 bg-yellow-600 bg-opacity-90 dark:bg-yellow-700 text-white flex items-center justify-center text-xl font-semibold opacity-0 group-hover:opacity-100 transition duration-300">
+        Start Quiz
+      </div>
+    </a>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+.meeting-container {
+  display: flex;
+  gap: 20px;
+}
+
+#jitsi-container {
+  flex: 1;
+}
+
+.sidebar {
+  width: 250px;
+  background: #f5f5f5;
+  padding: 10px;
+  border-radius: 10px;
+}
