@@ -1,0 +1,6 @@
+@EduLive_HostAddress = http://localhost:5166
+
+GET {{EduLive_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
